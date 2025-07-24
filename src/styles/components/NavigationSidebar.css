@@ -1,0 +1,77 @@
+/* Navigation Sidebar Styles */
+.navigation-sidebar {
+  width: 60px;
+  background-color: #202c33;
+  border-right: 1px solid #2a3942;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.nav-header {
+  margin-bottom: 30px;
+}
+
+.nav-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.nav-user-avatar:hover {
+  transform: scale(1.05);
+}
+
+.nav-items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: #8696a0;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.nav-item:hover {
+  background-color: #2a3942;
+  color: #e9edef;
+}
+
+.nav-item.active {
+  color: #00a884;
+  background-color: #2a3942;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background-color: #00a884;
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}

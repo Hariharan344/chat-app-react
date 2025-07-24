@@ -1,0 +1,47 @@
+/* Message Bubble Styles */
+.message-bubble {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+  margin-bottom: 4px;
+}
+
+.message-bubble.own {
+  align-self: flex-end;
+}
+
+.message-bubble.other {
+  align-self: flex-start;
+}
+
+.message-content {
+  padding: 8px 12px;
+  border-radius: 8px;
+  word-wrap: break-word;
+}
+
+.message-bubble.own .message-content {
+  background-color: #005c4b;
+  color: #e9edef;
+}
+
+.message-bubble.other .message-content {
+  background-color: #202c33;
+  color: #e9edef;
+}
+
+.message-text {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #8696a0;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.message-bubble.other .message-time {
+  text-align: left;
+}

@@ -1,0 +1,49 @@
+/* Contact Item Styles */
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  border: none;
+  background: none;
+}
+
+.contact-item:hover {
+  background-color: #2a3942;
+}
+
+.contact-avatar-container {
+  position: relative;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.contact-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-name {
+  display: block;
+  font-weight: 500;
+  color: #e9edef;
+  font-size: 13px;
+  margin-bottom: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-status {
+  color: #8696a0;
+  font-size: 11px;
+}
