@@ -1,15 +1,20 @@
 import React from 'react';
-import { MessageCircle, Users, Phone, Settings, Archive, Star } from 'lucide-react';
+import { MessageCircle, Users, Phone, Settings, Archive, Star, LogOut } from 'lucide-react';
 import '../styles/components/NavigationSidebar.css';
+import type { User } from '../types/chat';
 
 interface NavigationSidebarProps {
   activeSection: 'chats' | 'contacts' | 'calls' | 'settings';
   onSectionChange: (section: 'chats' | 'contacts' | 'calls' | 'settings') => void;
+  currentUser: User;
+  onLogout: () => void;
 }
 
 const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
   activeSection,
-  onSectionChange
+  onSectionChange,
+  currentUser,
+  onLogout
 }) => {
   const navigationItems = [
     { id: 'chats', icon: MessageCircle, label: 'Chats' },
@@ -22,11 +27,9 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
     <div className="navigation-sidebar">
       <div className="nav-header">
         <div className="user-avatar">
-          <img 
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
-            alt="Your Avatar" 
-            className="nav-user-avatar"
-          />
+          <div className="nav-user-avatar" title={currentUser.name}>
+            {currentUser.avatar}
+          </div>
         </div>
       </div>
 
@@ -52,6 +55,9 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
         </button>
         <button className="nav-item" title="Archived Chats">
           <Archive size={24} />
+        </button>
+        <button className="nav-item logout-btn" title="Logout" onClick={onLogout}>
+          <LogOut size={24} />
         </button>
       </div>
     </div>

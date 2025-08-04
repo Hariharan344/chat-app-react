@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Phone, Video, MoreVertical, Smile, Paperclip, Mic, Send } from 'lucide-react';
-import type { Chat, Message } from '../types/chat';
+import type { Chat, User } from '../types/chat';
 import MessageBubble from './MessageBubble';
 import '../styles/components/ChatArea.css';
 
 interface ChatAreaProps {
   chat: Chat | null;
+  currentUser: User | null;
   onSendMessage: (content: string) => void;
 }
 
-const ChatArea: React.FC<ChatAreaProps> = ({ chat, onSendMessage }) => {
+const ChatArea: React.FC<ChatAreaProps> = ({ chat, currentUser, onSendMessage }) => {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +36,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, onSendMessage }) => {
     }
   };
 
-  if (!chat) {
+  if (!chat || !currentUser) {
     return (
       <div className="chat-area-empty">
         <div className="empty-state">
@@ -46,17 +47,15 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, onSendMessage }) => {
     );
   }
 
-  const otherParticipant = chat.participants.find(p => p.id !== 'current-user');
+  const otherParticipant = chat.participants.find(p => p.id !== currentUser.id);
 
   return (
     <div className="chat-area">
       <div className="chat-header">
         <div className="chat-header-info">
-          <img 
-            src={otherParticipant?.avatar} 
-            alt={otherParticipant?.name} 
-            className="header-avatar"
-          />
+          <div className="header-avatar">
+            {otherParticipant?.avatar}
+          </div>
           <div className="header-details">
             <h3>{otherParticipant?.name}</h3>
             <span className="status">
@@ -84,7 +83,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, onSendMessage }) => {
             <MessageBubble
               key={message.id}
               message={message}
-              isOwn={message.senderId === 'current-user'}
+              isOwn={message.senderId === currentUser.id}
               showTime={
                 index === 0 || 
                 chat.messages[index - 1].senderId !== message.senderId ||

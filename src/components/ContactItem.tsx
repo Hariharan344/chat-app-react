@@ -4,17 +4,16 @@ import '../styles/components/ContactItem.css';
 
 interface ContactItemProps {
   contact: Contact;
+  onClick?: () => void;
 }
 
-const ContactItem: React.FC<ContactItemProps> = ({ contact }) => {
+const ContactItem: React.FC<ContactItemProps> = ({ contact, onClick }) => {
   return (
-    <div className="contact-item">
+    <div className="contact-item" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div className="contact-avatar-container">
-        <img 
-          src={contact.avatar} 
-          alt={contact.name} 
-          className="contact-avatar"
-        />
+        <div className="contact-avatar">
+          {contact.avatar}
+        </div>
         {contact.isOnline && (
           <div className="online-indicator"></div>
         )}

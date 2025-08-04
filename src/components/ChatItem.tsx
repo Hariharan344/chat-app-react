@@ -1,15 +1,16 @@
 import React from 'react';
-import type { Chat } from '../types/chat';
+import type { Chat, User } from '../types/chat';
 import '../styles/components/ChatItem.css';
 
 interface ChatItemProps {
   chat: Chat;
+  currentUser: User | null;
   isSelected: boolean;
   onClick: () => void;
 }
 
-const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onClick }) => {
-  const otherParticipant = chat.participants.find(p => p.id !== 'current-user');
+const ChatItem: React.FC<ChatItemProps> = ({ chat, currentUser, isSelected, onClick }) => {
+  const otherParticipant = chat.participants.find(p => p.id !== currentUser?.id);
   
   const formatTime = (date: Date) => {
     const now = new Date();
@@ -36,11 +37,9 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onClick }) => {
       onClick={onClick}
     >
       <div className="chat-avatar-container">
-        <img 
-          src={otherParticipant?.avatar} 
-          alt={otherParticipant?.name} 
-          className="chat-avatar"
-        />
+        <div className="chat-avatar">
+          {otherParticipant?.avatar}
+        </div>
         {otherParticipant?.status === 'online' && (
           <div className="online-indicator"></div>
         )}

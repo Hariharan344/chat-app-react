@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, MoreVertical } from 'lucide-react';
-import type { Chat, Contact } from '../types/chat';
+import type { Chat, Contact, User } from '../types/chat';
 import ChatItem from './ChatItem';
 import ContactItem from './ContactItem';
 import '../styles/components/Sidebar.css';
@@ -9,21 +9,33 @@ interface SidebarProps {
   chats: Chat[];
   contacts: Contact[];
   activeSection: 'chats' | 'contacts' | 'calls' | 'settings';
+  currentUser: User | null;
   onChatSelect: (chatId: string) => void;
+  onUserSelect: (userId: string) => void;
+  onContactSelect?: (contact: Contact) => void; // New prop for starting chat with contact
   selectedChatId?: string;
+  loading?: boolean;
+  error?: string | null;
+  wsConnected?: boolean; // WebSocket connection status
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   chats,
   contacts,
   activeSection,
+  currentUser,
   onChatSelect,
-  selectedChatId
+  onUserSelect: _onUserSelect, // Prefix with underscore to indicate it's intentionally unused
+  onContactSelect,
+  selectedChatId,
+  loading = false,
+  error = null,
+  wsConnected = false
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredChats = chats.filter(chat => {
-    const otherParticipant = chat.participants.find(p => p.id !== 'current-user');
+    const otherParticipant = chat.participants.find(p => p.id !== currentUser?.id);
     return otherParticipant?.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -50,9 +62,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div className="sidebar">
       <div className="sidebar-header">
         <h2 className="sidebar-title">{getSectionTitle()}</h2>
-        <button className="header-menu-btn">
-          <MoreVertical size={20} />
-        </button>
+        <div className="header-actions">
+          <div className={`ws-status ${wsConnected ? 'connected' : 'disconnected'}`} title={wsConnected ? 'WebSocket Connected' : 'WebSocket Disconnected'}>
+            <div className="ws-indicator"></div>
+          </div>
+          <button className="header-menu-btn">
+            <MoreVertical size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="search-container">
@@ -75,6 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <ChatItem
                 key={chat.id}
                 chat={chat}
+                currentUser={currentUser}
                 isSelected={selectedChatId === chat.id}
                 onClick={() => onChatSelect(chat.id)}
               />
@@ -84,10 +102,27 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {activeSection === 'contacts' && (
           <div className="contacts-list">
-            {filteredContacts.map(contact => (
+            {loading && (
+              <div className="loading-state">
+                <p>Loading users...</p>
+              </div>
+            )}
+            {error && (
+              <div className="error-state">
+                <p>Error: {error}</p>
+                <button onClick={() => window.location.reload()}>Retry</button>
+              </div>
+            )}
+            {!loading && !error && filteredContacts.length === 0 && (
+              <div className="empty-state">
+                <p>No users found</p>
+              </div>
+            )}
+            {!loading && !error && filteredContacts.map(contact => (
               <ContactItem
                 key={contact.id}
                 contact={contact}
+                onClick={() => onContactSelect?.(contact)}
               />
             ))}
           </div>

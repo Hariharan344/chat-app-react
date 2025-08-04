@@ -1,37 +1,74 @@
 import type { User, Chat, Message, Contact } from '../types/chat';
 
+// Static login user based on your example
 export const currentUser: User = {
-  id: 'current-user',
-  name: 'You',
-  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-  status: 'online'
+  id: '68826294b49ac2ac32816e84',
+  name: 'Hari Haran',
+  avatar: 'H', // First letter of name
+  status: 'online',
+  chatData: {
+    id: '68826294b49ac2ac32816e84',
+    mail: 'hari123@gmail.com',
+    role: 'USER'
+  },
+  fullData: {
+    id: '68826294b49ac2ac32816e84',
+    name: 'Hari Haran',
+    mail: 'hari123@gmail.com',
+    password: '$2a$10$rhibWWTd3ZF8F0wwR60OL.p5yYyI376mOrnnkXrdl3NgRwuOhgnVi',
+    role: 'USER',
+    phoneNumber: '8794567345',
+    status: 'ACTIVE',
+    createdAt: '2025-07-24T22:13:00.050445500',
+    updatedAt: null
+  }
 };
 
 export const users: User[] = [
   {
     id: '1',
     name: 'Darshan Zalavadiya',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
-    status: 'online'
+    avatar: 'D', // First letter of name
+    status: 'online',
+    chatData: {
+      id: '1',
+      mail: 'darshan@example.com',
+      role: 'USER'
+    }
   },
   {
     id: '2',
     name: 'Devang Zalavadiya',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face',
-    status: 'online'
+    avatar: 'D', // First letter of name
+    status: 'online',
+    chatData: {
+      id: '2',
+      mail: 'devang@example.com',
+      role: 'USER'
+    }
   },
   {
     id: '3',
     name: 'Sahil Raj Ghori',
-    avatar: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=40&h=40&fit=crop&crop=face',
+    avatar: 'S', // First letter of name
     status: 'offline',
-    lastSeen: '2 hours ago'
+    lastSeen: '2 hours ago',
+    chatData: {
+      id: '3',
+      mail: 'sahil@example.com',
+      role: 'USER'
+    }
   },
   {
     id: '4',
     name: 'Harsh Tiwana',
-    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=40&h=40&fit=crop&crop=face',
-    status: 'online'
+    avatar: 'H', // First letter of name
+    status: 'online',
+    chatData: {
+      id: '4',
+      mail: 'harsh@example.com',
+      role: 'USER'
+    }
   }
 ];
 
@@ -45,14 +82,14 @@ export const messages: Message[] = [
   },
   {
     id: '2',
-    senderId: 'current-user',
+    senderId: '68826294b49ac2ac32816e84', // Current user ID
     content: 'Hello, Darshan',
     timestamp: new Date('2024-01-20T09:30:30'),
     type: 'text'
   },
   {
     id: '3',
-    senderId: 'current-user',
+    senderId: '68826294b49ac2ac32816e84', // Current user ID
     content: 'How are you',
     timestamp: new Date('2024-01-20T09:31:00'),
     type: 'text'
@@ -73,7 +110,7 @@ export const messages: Message[] = [
   },
   {
     id: '6',
-    senderId: 'current-user',
+    senderId: '68826294b49ac2ac32816e84', // Current user ID
     content: 'Same for this side',
     timestamp: new Date('2024-01-20T09:33:00'),
     type: 'text'
