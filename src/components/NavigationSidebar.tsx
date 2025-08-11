@@ -1,11 +1,11 @@
 import React from 'react';
-import { MessageCircle, Users, Phone, Settings, Archive, Star, LogOut } from 'lucide-react';
+import { MessageCircle, Users, Phone, Settings, Archive, Star, LogOut, UsersRound } from 'lucide-react';
 import '../styles/components/NavigationSidebar.css';
 import type { User } from '../types/chat';
 
 interface NavigationSidebarProps {
-  activeSection: 'chats' | 'contacts' | 'calls' | 'settings';
-  onSectionChange: (section: 'chats' | 'contacts' | 'calls' | 'settings') => void;
+  activeSection: 'chats' | 'groups' | 'contacts' | 'calls' | 'settings';
+  onSectionChange: (section: 'chats' | 'groups' | 'contacts' | 'calls' | 'settings') => void;
   currentUser: User;
   onLogout: () => void;
 }
@@ -18,6 +18,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
 }) => {
   const navigationItems = [
     { id: 'chats', icon: MessageCircle, label: 'Chats' },
+    { id: 'groups', icon: UsersRound, label: 'Groups' },
     { id: 'contacts', icon: Users, label: 'Contacts' },
     { id: 'calls', icon: Phone, label: 'Calls' },
     { id: 'settings', icon: Settings, label: 'Settings' }

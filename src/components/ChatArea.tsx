@@ -1,16 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Phone, Video, MoreVertical, Smile, Paperclip, Mic, Send } from 'lucide-react';
-import type { Chat, User } from '../types/chat';
+import type { Chat, User, GroupChat, Message } from '../types/chat';
 import MessageBubble from './MessageBubble';
 import '../styles/components/ChatArea.css';
 
 interface ChatAreaProps {
   chat: Chat | null;
+  group: GroupChat | null;
   currentUser: User | null;
   onSendMessage: (content: string) => void;
 }
 
-const ChatArea: React.FC<ChatAreaProps> = ({ chat, currentUser, onSendMessage }) => {
+const ChatArea: React.FC<ChatAreaProps> = ({ chat, group, currentUser, onSendMessage }) => {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -20,7 +21,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, currentUser, onSendMessage })
 
   useEffect(() => {
     scrollToBottom();
-  }, [chat?.messages]);
+  }, [chat?.messages, group?.messages]);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -36,30 +37,61 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, currentUser, onSendMessage })
     }
   };
 
-  if (!chat || !currentUser) {
+  if ((!chat && !group) || !currentUser) {
     return (
       <div className="chat-area-empty">
         <div className="empty-state">
           <h2>Welcome to Chat App</h2>
-          <p>Select a chat to start messaging</p>
+          <p>Select a chat or group to start messaging</p>
         </div>
       </div>
     );
   }
 
-  const otherParticipant = chat.participants.find(p => p.id !== currentUser.id);
+  // Determine if we're in a group chat or individual chat
+  const isGroupChat = !!group;
+  const otherParticipant = chat?.participants.find(p => p.id !== currentUser.id);
+  
+  console.log('ChatArea - isGroupChat:', isGroupChat);
+  console.log('ChatArea - chat:', chat);
+  console.log('ChatArea - group:', group);
+  
+  // Get messages - convert group messages to display format if needed
+  const messages = isGroupChat 
+    ? (group!.messages.map(msg => ({
+        id: msg.id,
+        senderId: msg.senderId,
+        content: msg.message,
+        timestamp: msg.timestamp,
+        type: 'text' as const
+      })) as Message[])
+    : (chat!.messages || []);
+    
+  console.log('ChatArea - messages:', messages);
+  console.log('ChatArea - messages length:', messages.length);
+
+  // Get display name
+  const displayName = isGroupChat ? group!.name : otherParticipant?.name || 'Unknown';
+  const displayAvatar = isGroupChat ? group!.image : otherParticipant?.avatar || '?';
+  const displayStatus = isGroupChat 
+    ? `${group!.participants.length} members` 
+    : (otherParticipant?.status === 'online' ? 'Online' : otherParticipant?.lastSeen || 'Offline');
 
   return (
     <div className="chat-area">
       <div className="chat-header">
         <div className="chat-header-info">
           <div className="header-avatar">
-            {otherParticipant?.avatar}
+            {typeof displayAvatar === 'string' && displayAvatar.length === 1 ? (
+              <span>{displayAvatar}</span>
+            ) : (
+              <img src={displayAvatar} alt={displayName} />
+            )}
           </div>
           <div className="header-details">
-            <h3>{otherParticipant?.name}</h3>
+            <h3>{displayName}</h3>
             <span className="status">
-              {otherParticipant?.status === 'online' ? 'Online' : otherParticipant?.lastSeen || 'Offline'}
+              {displayStatus}
             </span>
           </div>
         </div>
@@ -79,16 +111,12 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, currentUser, onSendMessage })
 
       <div className="messages-container">
         <div className="messages-list">
-          {chat.messages.map((message, index) => (
+          {messages.map((message) => (
             <MessageBubble
               key={message.id}
               message={message}
               isOwn={message.senderId === currentUser.id}
-              showTime={
-                index === 0 || 
-                chat.messages[index - 1].senderId !== message.senderId ||
-                (message.timestamp.getTime() - chat.messages[index - 1].timestamp.getTime()) > 300000 // 5 minutes
-              }
+              showTime={true}
             />
           ))}
           <div ref={messagesEndRef} />

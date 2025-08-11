@@ -14,8 +14,9 @@ export interface ApiUser {
 // Chat-specific user data (minimal data needed for chat)
 export interface ChatUser {
   id: string;
-  mail: string;
-  role: string;
+  name: string;
+  mail?: string;
+  role?: string;
 }
 
 // User interface for UI display
@@ -49,6 +50,7 @@ export interface Chat {
 
 export interface Contact extends User {
   isOnline: boolean;
+  email?: string; // Email for contact search
 }
 
 // Chat list types based on your backend structure
@@ -72,7 +74,9 @@ export interface ChatMessage {
   senderId: string;
   receiverId: string;
   message: string;
-  timestamp: string;
+  status: string | null;
+  date: string;
+  time: string;
   roomId?: string;
 }
 
@@ -102,6 +106,59 @@ export interface GenericResponse<T> {
   data: T;
 }
 
+// Group Chat Types
+export interface GroupDetails {
+  groupName: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  lastMessageBy: string;
+  unreadCount: number;
+  groupImage: string;
+  createdBy: string;
+}
+
+export interface GroupChatListDto {
+  id: string;
+  UserId: string;
+  groupsDet: Record<string, GroupDetails>; // Map with group IDs as keys
+}
+
+export interface GroupMessage {
+  id: string;
+  groupId: string;
+  senderId: string;
+  message: string;
+  timestamp: Date;
+  type: string;
+}
+
+export interface GroupMessagesResponse {
+  messages: GroupMessage[];
+  totalCount: number;
+}
+
+export interface GroupChat {
+  id: string;
+  name: string;
+  image: string;
+  participants: User[];
+  messages: GroupMessage[];
+  lastMessage?: GroupMessage;
+  unreadCount: number;
+  createdBy: string;
+  createdAt?: Date;
+}
+
+// WebSocket DTO for group messages
+export interface GroupChatDto {
+  id?: string;
+  groupId: string;
+  senderId: string;
+  message: string;
+  timestamp?: string;
+  type?: string;
+}
+
 // Utility function to convert API user to app User
 export const convertApiUserToUser = (apiUser: ApiUser, onlineStatus?: 'online' | 'offline'): User => {
   // Get first letter of name for avatar
@@ -118,6 +175,7 @@ export const convertApiUserToUser = (apiUser: ApiUser, onlineStatus?: 'online' |
     lastSeen: status !== 'online' ? 'Last seen recently' : undefined,
     chatData: {
       id: apiUser.id,
+      name: apiUser.name,
       mail: apiUser.mail,
       role: apiUser.role
     },

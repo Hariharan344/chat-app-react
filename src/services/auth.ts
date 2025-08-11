@@ -20,6 +20,7 @@ export class AuthService {
         status: 'online',
         chatData: {
           id: authData.userId,
+          name: authData.userName,
           mail: '', // Will be populated when we fetch full user data
           role: authData.role
         }
@@ -50,6 +51,7 @@ export class AuthService {
           status: 'online',
           chatData: {
             id: response.data.userId,
+            name: response.data.userName,
             mail: mail, // Use the email from login
             role: response.data.role
           }
@@ -93,6 +95,7 @@ export class AuthService {
           status: 'online',
           chatData: {
             id: response.data.userId,
+            name: response.data.userName,
             mail: this.currentUser?.chatData.mail || '',
             role: response.data.role
           }

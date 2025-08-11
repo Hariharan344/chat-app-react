@@ -1,0 +1,121 @@
+.group-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.group-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.group-item.selected {
+  background-color: #007bff;
+}
+
+.group-item.selected:hover {
+  background-color: #0056b3;
+}
+
+.group-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.group-avatar .avatar-text {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.group-avatar .avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.group-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.group-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #a0a0a0;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.group-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.last-message {
+  font-size: 14px;
+  color: #a0a0a0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.no-messages {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
+.unread-badge {
+  background-color: #007bff;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+.group-item.selected .last-message,
+.group-item.selected .message-time,
+.group-item.selected .group-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.group-item.selected .unread-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+}

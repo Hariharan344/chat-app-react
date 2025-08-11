@@ -1,5 +1,13 @@
 // API service for backend communication
-import type { ApiUser, ChatListResponse, ChatMessagesResponse, GenericResponse } from '../types/chat';
+import type { 
+  ApiUser, 
+  ChatListResponse, 
+  ChatMessagesResponse, 
+  GenericResponse,
+  GroupChatListDto,
+  GroupMessagesResponse,
+  GroupMessage
+} from '../types/chat';
 import { httpClient } from './httpClient';
 
 export interface UserResponse {
@@ -28,7 +36,7 @@ export const apiService = {
 
   async getUsers(): Promise<ApiUser[]> {
     try {
-      const result = await httpClient.get<UsersApiResponse>('/user');
+      const result = await httpClient.get<UsersApiResponse>('/user/getAllUsers');
       
       // Type guards
       const isValidUser = (obj: any): obj is ApiUser => {
@@ -147,6 +155,112 @@ export const apiService = {
       throw new Error('API returned invalid chat messages format');
     } catch (error) {
       console.error('Error fetching chat messages:', error);
+      throw error;
+    }
+  },
+
+  // Group Chat Methods
+  
+  // Get group chat list for a user
+  async getGroupChatList(userId: string): Promise<GroupChatListDto> {
+    try {
+      const result = await httpClient.get<any>(`/groupchat/getGroupList/${userId}`);
+      
+      console.log('Group chat list API Response:', result);
+      
+      // Handle the actual API response format
+      if (result.status && result.data) {
+        return result.data;
+      }
+      
+      // Direct response
+      if (result.id && result.UserId && result.groupsDet) {
+        return result;
+      }
+      
+      throw new Error('API returned invalid group chat list format');
+    } catch (error) {
+      console.error('Error fetching group chat list:', error);
+      throw error;
+    }
+  },
+
+  // Get group chat messages
+  async getGroupChatMessages(groupId: string, userId: string): Promise<GroupMessagesResponse> {
+    try {
+      const apiUrl = `/groupchat/getMessages/${groupId}?userId=${userId}`;
+      console.log('Calling group messages API:', apiUrl);
+      
+      const result = await httpClient.get<any>(apiUrl);
+      
+      console.log('Group chat messages API Response:', result);
+      
+      // Handle the API response format
+      if (result.status && result.data && Array.isArray(result.data)) {
+        const messages: GroupMessage[] = result.data.map((msg: any) => ({
+          id: msg.id,
+          groupId: msg.groupId,
+          senderId: msg.senderId,
+          message: msg.message,
+          timestamp: msg.time ? new Date(msg.time) : new Date(), // Handle null time field
+          type: msg.type || 'text'
+        }));
+        
+        return {
+          messages: messages,
+          totalCount: messages.length
+        };
+      }
+      
+      // Direct response (array)
+      if (Array.isArray(result)) {
+        const messages: GroupMessage[] = result.map((msg: any) => ({
+          id: msg.id,
+          groupId: msg.groupId,
+          senderId: msg.senderId,
+          message: msg.message,
+          timestamp: msg.time ? new Date(msg.time) : new Date(), // Handle null time field
+          type: msg.type || 'text'
+        }));
+        
+        return {
+          messages: messages,
+          totalCount: messages.length
+        };
+      }
+      
+      throw new Error('API returned invalid group chat messages format');
+    } catch (error) {
+      console.error('Error fetching group chat messages:', error);
+      throw error;
+    }
+  },
+
+  // Create new group
+  async createGroup(groupData: {
+    groupName: string;
+    groupDescription: string;
+    createdBy: string;
+    membersId: string[];
+  }): Promise<any> {
+    try {
+      const result = await httpClient.post<any>('/group/create', groupData);
+      
+      console.log('Create group API Response:', result);
+      
+      // Handle the API response format
+      if (result && typeof result === 'object' && 'status' in result && result.status && 'data' in result) {
+        return (result as any).data;
+      }
+      
+      // Direct response
+      if (result && typeof result === 'object' && 'id' in result) {
+        return result;
+      }
+      
+      throw new Error('API returned invalid create group format');
+    } catch (error) {
+      console.error('Error creating group:', error);
       throw error;
     }
   }
