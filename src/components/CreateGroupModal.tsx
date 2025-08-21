@@ -165,10 +165,10 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
 
   // Debug logging - only when modal is open
   if (isOpen) {
-    console.log('CreateGroupModal opened with contacts:', contactsToUse.length);
-    console.log('Available users:', contactsToUse.map(c => c.name));
+    // console.log('CreateGroupModal opened with contacts:', contactsToUse.length);
+    // console.log('Available users:', contactsToUse.map(c => c.name));
     if (searchQuery) {
-      console.log('Search results:', filteredContacts.length);
+      // console.log('Search results:', filteredContacts.length);
     }
   }
 

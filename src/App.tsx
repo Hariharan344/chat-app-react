@@ -61,6 +61,9 @@ function App() {
             
             // Still subscribe to group room for real-time messages
             webSocketService.subscribeToGroupRoom(groupId);
+            
+            // Set this group as the active one for notification clearing
+            webSocketService.setActiveGroup(groupId);
             return;
           }
 
@@ -101,6 +104,9 @@ function App() {
           // Subscribe to group room for real-time messages
           webSocketService.subscribeToGroupRoom(groupId);
           
+          // Set this group as the active one for notification clearing
+          webSocketService.setActiveGroup(groupId);
+          
           // Mark this group as loaded
           setLoadedGroups(prev => new Set(prev).add(selectedChatId));
           
@@ -109,6 +115,9 @@ function App() {
           // Handle individual chat loading
           const chat = chatList.find(c => c.id === selectedChatId);
           if (!chat) return;
+
+          // Clear active group since we're switching to individual chat
+          webSocketService.setActiveGroup(null);
 
           // Skip loading if messages are already loaded for this chat
           if (loadedChats.has(selectedChatId)) {
@@ -162,6 +171,9 @@ function App() {
           // Subscribe to specific chat room for real-time messages
           webSocketService.subscribeToChatRoom(currentUser.id, otherUser.id);
           
+          // Clear active group since we're in individual chat
+          webSocketService.setActiveGroup(null);
+          
           // Mark this chat as loaded
           setLoadedChats(prev => new Set(prev).add(selectedChatId));
           
@@ -174,6 +186,13 @@ function App() {
 
     loadChatMessages();
   }, [selectedChatId, currentUser, wsConnected]); // Removed chatList from dependencies
+
+  // Clear active group when no chat is selected
+  useEffect(() => {
+    if (!selectedChatId) {
+      webSocketService.setActiveGroup(null);
+    }
+  }, [selectedChatId]);
   
   // Check authentication on app load
   useEffect(() => {

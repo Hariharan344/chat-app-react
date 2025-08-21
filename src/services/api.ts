@@ -263,5 +263,16 @@ export const apiService = {
       console.error('Error creating group:', error);
       throw error;
     }
+  },
+
+  // Clear notifications for a group when the user has that group open
+  async clearGroupNotification(groupId: string, onlineUser: string): Promise<void> {
+    try {
+      // Backend endpoint: POST /groupchat/clearNotification?groupId=...&onlineUser=...
+      const url = `/groupchat/clearNotification?groupId=${encodeURIComponent(groupId)}&onlineUser=${encodeURIComponent(onlineUser)}`;
+      await httpClient.post<void>(url);
+    } catch (error) {
+      console.error('Error clearing group notification:', error);
+    }
   }
 };

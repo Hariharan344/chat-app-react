@@ -52,9 +52,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, group, currentUser, onSendMes
   const isGroupChat = !!group;
   const otherParticipant = chat?.participants.find(p => p.id !== currentUser.id);
   
-  console.log('ChatArea - isGroupChat:', isGroupChat);
-  console.log('ChatArea - chat:', chat);
-  console.log('ChatArea - group:', group);
+  // console.log('ChatArea - isGroupChat:', isGroupChat);
+  // console.log('ChatArea - chat:', chat);
+  // console.log('ChatArea - group:', group);
   
   // Get messages - convert group messages to display format if needed
   const messages = isGroupChat 
@@ -67,8 +67,8 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, group, currentUser, onSendMes
       })) as Message[])
     : (chat!.messages || []);
     
-  console.log('ChatArea - messages:', messages);
-  console.log('ChatArea - messages length:', messages.length);
+  // console.log('ChatArea - messages:', messages);
+  // console.log('ChatArea - messages length:', messages.length);
 
   // Get display name
   const displayName = isGroupChat ? group!.name : otherParticipant?.name || 'Unknown';

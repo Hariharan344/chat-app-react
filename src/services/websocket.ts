@@ -2,6 +2,7 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { httpClient } from './httpClient';
+import { apiService } from './api';
 
 export interface ChatDto {
   id?: string;
@@ -48,6 +49,7 @@ class WebSocketService {
   private groupMessageCallbacks: GroupMessageCallback[] = [];
   private groupCreateCallbacks: GroupCreateCallback[] = [];
   private currentUserId: string = '';
+  private activeGroupId: string | null = null; // currently open group chat
 
   constructor() {
     this.client = null;
@@ -113,6 +115,12 @@ class WebSocketService {
     });
   }
 
+  // Set the active (open) group chat ID so we can clear notifications when messages arrive
+  setActiveGroup(groupId: string | null): void {
+    console.log('Setting active group:', groupId);
+    this.activeGroupId = groupId;
+  }
+
   // Subscribe to receive messages
   private subscribeToMessages(userId: string) {
     if (!this.client || !this.connected) {
@@ -134,10 +142,22 @@ class WebSocketService {
     });
 
     // Subscribe to user's group message queue
-    this.client.subscribe(`/user/${userId}/group/message`, (message) => {
+    this.client.subscribe(`/user/${userId}/group/message`, async (message) => {
       try {
         const groupChatDto: GroupChatDto = JSON.parse(message.body);
-        console.log('Received group message:', groupChatDto);
+        // console.log('Received group message:', groupChatDto);
+
+        // If the currently open group matches the incoming message group, clear notifications
+        console.log('Checking if should clear notification - activeGroupId:', this.activeGroupId, 'messageGroupId:', groupChatDto.groupId);
+        if (this.activeGroupId && groupChatDto.groupId === this.activeGroupId) {
+          console.log('Clearing notification for group:', groupChatDto.groupId, 'user:', userId);
+          try {
+            await apiService.clearGroupNotification(groupChatDto.groupId, userId);
+            console.log('Successfully cleared notification');
+          } catch (err) {
+            console.error('Failed to clear group notification:', err);
+          }
+        }
         
         // Notify all group message callbacks
         this.groupMessageCallbacks.forEach(callback => callback(groupChatDto));
@@ -159,7 +179,7 @@ class WebSocketService {
       }
     });
 
-    console.log(`Subscribed to /user/${userId}/queue/chat, /user/${userId}/group/message and /user/${userId}/group/create`);
+    // console.log(`Subscribed to /user/${userId}/queue/chat, /user/${userId}/group/message and /user/${userId}/group/create`);
   }
 
   // Send message to another user
