@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { authService } from '../services/auth';
 import type { User } from '../types/chat';
+import ResetPasswordModal from './ResetPasswordModal';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -11,6 +12,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mustChangePwd, setMustChangePwd] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +23,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const result = await authService.login(email, password);
       
       if (result.success && result.user) {
-        onLogin(result.user);
+        if (result.mustChangePassword) {
+          // Block app navigation and force password reset
+          setMustChangePwd(true);
+        } else {
+          onLogin(result.user);
+        }
       } else {
         setError(result.error || 'Login failed');
       }
@@ -30,6 +37,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResetSuccess = async () => {
+    setMustChangePwd(false);
+    // After password reset, user tokens are set; attempt to get current user
+    const user = authService.getCurrentUser();
+    if (user) {
+      onLogin(user);
+      return;
+    }
+    // If not set, re-try login with new password (user will type again next time)
   };
 
   return (
@@ -74,6 +92,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </button>
         </form>
       </div>
+
+      <ResetPasswordModal
+        open={mustChangePwd}
+        username={email}
+        oldPassword={password}
+        onSuccess={handleResetSuccess}
+        onClose={() => setMustChangePwd(false)}
+      />
     </div>
   );
 };

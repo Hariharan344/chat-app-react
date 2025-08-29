@@ -1,4 +1,4 @@
-import type { User, AuthRequest, AuthResponse, GenericResponse } from '../types/chat';
+import type { User, AuthRequest, AuthResponse, GenericResponse, ResetPasswordRequest } from '../types/chat';
 import { httpClient } from './httpClient';
 
 export class AuthService {
@@ -28,7 +28,7 @@ export class AuthService {
     }
   }
 
-  async login(mail: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
+  async login(mail: string, password: string): Promise<{ success: boolean; user?: User; error?: string; mustChangePassword?: boolean }> {
     try {
       const authRequest: AuthRequest = { mail, password };
       
@@ -57,17 +57,65 @@ export class AuthService {
           }
         };
 
+        const mustChange =
+          (response.data as any).mustChangePassword === true ||
+          (response.data as any).mustchangePassword === true;
+
         console.log('Login successful:', response.message);
+        if (mustChange) {
+          // Login succeeded but user must reset password immediately
+          return { success: true, user: this.currentUser, mustChangePassword: true };
+        }
         return { success: true, user: this.currentUser };
       } else {
         return { success: false, error: response.message || 'Login failed' };
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Wrong password -> 401 should just show error, no reset flow
+      if (typeof error?.message === 'string' && error.message.includes('401')) {
+        return { success: false, error: 'Invalid credentials' };
+      }
       console.error('Login error:', error);
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Login failed. Please try again.' 
       };
+    }
+  }
+
+  // Call backend to reset password (first login)
+  async resetPassword(payload: ResetPasswordRequest): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Skip auth because user may not have a valid token yet
+      const response = await httpClient.put<GenericResponse<AuthResponse>>(
+        '/auth/resetPassword',
+        payload,
+        { skipAuth: true }
+      );
+
+      if (response.status && response.data) {
+        // After successful reset, backend returns tokens again
+        httpClient.setAuthData(response.data);
+        // Update current user basics
+        this.currentUser = {
+          id: response.data.userId,
+          name: response.data.userName,
+          avatar: response.data.userName.charAt(0).toUpperCase(),
+          status: 'online',
+          chatData: {
+            id: response.data.userId,
+            name: response.data.userName,
+            mail: payload.username,
+            role: response.data.role
+          }
+        };
+        return { success: true };
+      }
+
+      return { success: false, error: response.message || 'Password reset failed' };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Password reset failed' };
     }
   }
 

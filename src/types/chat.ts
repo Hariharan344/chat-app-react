@@ -97,6 +97,15 @@ export interface AuthResponse {
   userName: string;
   userId: string;
   role: string;
+  mustChangePassword: boolean;
+}
+
+// Password reset (first login) request payload
+export interface ResetPasswordRequest {
+  username: string;
+  oldpassword: string;
+  newpassword: string;
+  confirmpassword: string;
 }
 
 export interface GenericResponse<T> {
