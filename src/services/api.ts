@@ -274,5 +274,16 @@ export const apiService = {
     } catch (error) {
       console.error('Error clearing group notification:', error);
     }
+  },
+
+  // Clear online notification when a direct chat is opened between two users
+  async clearOnlineNotification(senderId: string, receiverId: string): Promise<void> {
+    try {
+      // Backend endpoint: POST /chat/clearOnlineNotification?senderId=...&receiverId=...
+      const url = `/chat/clearOnlineNotification?senderId=${encodeURIComponent(senderId)}&receiverId=${encodeURIComponent(receiverId)}`;
+      await httpClient.put<void>(url);
+    } catch (error) {
+      console.error('Error clearing online notification:', error);
+    }
   }
 };

@@ -283,6 +283,19 @@ class WebSocketService {
         }
       });
 
+       const topic = `/user/${currentUserId}/${otherUserId}/queue/user`;
+      this.client.subscribe(topic, async (message) => {
+        try {
+          // Optionally parse payload if needed
+          console.log('Received user-open-chat event:', message.body);
+          await apiService.clearOnlineNotification(currentUserId, otherUserId);
+          console.log('Cleared online notification for', { currentUserId, otherUserId });
+        } catch (error) {
+          console.error('Error handling user-open-chat event:', error);
+        }
+      });
+      console.log(`Subscribed to user-open-chat topic: ${topic}`);
+
       console.log(`Subscribed to chat room: ${roomTopic}`);
     } catch (error) {
       console.error('Error subscribing to chat room:', error);
@@ -310,10 +323,36 @@ class WebSocketService {
           console.error('Error parsing group room message:', error);
         }
       });
+      
 
       console.log(`Subscribed to group room: ${groupTopic}`);
     } catch (error) {
       console.error('Error subscribing to group room:', error);
+    }
+  }
+
+  // Subscribe to user-open-chat notification channel and clear online notification
+  subscribeToUserOpenChat(loginUserId: string, selectedUserId: string): void {
+    if (!this.client || !this.connected) {
+      console.error('WebSocket not connected, cannot subscribe to user open chat');
+      return;
+    }
+
+    try {
+      const topic = `/user/${loginUserId}/${selectedUserId}/queue/user`;
+      this.client.subscribe(topic, async (message) => {
+        try {
+          // Optionally parse payload if needed
+          console.log('Received user-open-chat event:', message.body);
+          await apiService.clearOnlineNotification(loginUserId, selectedUserId);
+          console.log('Cleared online notification for', { loginUserId, selectedUserId });
+        } catch (error) {
+          console.error('Error handling user-open-chat event:', error);
+        }
+      });
+      console.log(`Subscribed to user-open-chat topic: ${topic}`);
+    } catch (error) {
+      console.error('Error subscribing to user-open-chat topic:', error);
     }
   }
 

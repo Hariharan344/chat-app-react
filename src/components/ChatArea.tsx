@@ -3,6 +3,8 @@ import { Phone, Video, MoreVertical, Smile, Paperclip, Mic, Send } from 'lucide-
 import type { Chat, User, GroupChat, Message } from '../types/chat';
 import MessageBubble from './MessageBubble';
 import '../styles/components/ChatArea.css';
+import { useWebRTC } from './WebRTCProvider';
+import CallControls from './CallControls';
 
 interface ChatAreaProps {
   chat: Chat | null;
@@ -77,6 +79,8 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, group, currentUser, onSendMes
     ? `${group!.participants.length} members` 
     : (otherParticipant?.status === 'online' ? 'Online' : otherParticipant?.lastSeen || 'Offline');
 
+  const { initiateCall } = useWebRTC();
+
   return (
     <div className="chat-area">
       <div className="chat-header">
@@ -97,10 +101,22 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, group, currentUser, onSendMes
         </div>
         
         <div className="chat-header-actions">
-          <button className="header-btn">
+          <button className="header-btn" onClick={() => {
+            if (!chat || !currentUser) return;
+            const other = chat.participants.find(p => p.id !== currentUser.id);
+            if (other) {
+              initiateCall(other.id, other.name, 'audio');
+            }
+          }}>
             <Phone size={20} />
           </button>
-          <button className="header-btn">
+          <button className="header-btn" onClick={() => {
+            if (!chat || !currentUser) return;
+            const other = chat.participants.find(p => p.id !== currentUser.id);
+            if (other) {
+              initiateCall(other.id, other.name, 'video');
+            }
+          }}>
             <Video size={20} />
           </button>
           <button className="header-btn">
@@ -154,6 +170,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chat, group, currentUser, onSendMes
           )}
         </div>
       </div>
+      <CallControls />
     </div>
   );
 };
